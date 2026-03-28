@@ -1,0 +1,1 @@
+Welcome to the Celestal repo, this is an advanced web proxy based off of scramjet and ultraviolet combined to make one powerful one. this is open source and will continue to be updates. at the moment 'BlueNebula' the proxy included in this repo id thr omly one powered by celestal
