@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BlueNebula</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#4fc3ff;--accent2:#a0d8ff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Rajdhani',sans-serif;color:white;overflow:hidden;background:#000;height:100vh;width:100vw;}
+canvas#bg{position:fixed;top:0;left:0;z-index:0;pointer-events:none;}
+.nav{position:fixed;top:18px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,rgba(0,5,16,.88),rgba(4,22,80,.78));backdrop-filter:blur(24px);border:1px solid rgba(79,195,255,.22);box-shadow:0 0 40px rgba(79,195,255,.1),inset 0 1px 0 rgba(160,216,255,.07);z-index:999;}
+.nb{background:none;border:none;color:rgba(160,216,255,.45);cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.nb:hover{color:var(--accent);background:rgba(79,195,255,.12);box-shadow:0 0 14px rgba(79,195,255,.3);}
+.nb svg{width:20px;height:20px;fill:currentColor;}
+.ndiv{width:1px;height:22px;background:rgba(79,195,255,.14);margin:0 2px;}
+#devBtn{font-family:'Orbitron',monospace;font-size:9px;font-weight:700;color:var(--accent2);border:1px solid rgba(79,195,255,.28);border-radius:6px;padding:4px 10px;height:auto;width:auto;letter-spacing:1px;display:none;background:rgba(79,195,255,.06);}
+#devBtn.show{display:flex;}
+#devBtn:hover{background:rgba(79,195,255,.15);color:white;}
+#home{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;}
+.logo{font-family:'Orbitron',sans-serif;font-size:clamp(52px,10vw,88px);font-weight:900;background:linear-gradient(135deg,#fff 0%,var(--accent2) 35%,var(--accent) 65%,#1a6fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 30px rgba(79,195,255,.55));animation:lp 5s ease-in-out infinite;letter-spacing:-2px;}
+@keyframes lp{0%,100%{filter:drop-shadow(0 0 20px rgba(79,195,255,.4))}50%{filter:drop-shadow(0 0 55px rgba(79,195,255,.9)) drop-shadow(0 0 90px rgba(26,111,255,.35))}}
+.sub{color:rgba(160,216,255,.4);font-size:14px;letter-spacing:4px;text-transform:uppercase;margin:10px 0 38px;font-weight:600;}
+.search-bar{display:flex;align-items:center;width:min(600px,90vw);background:linear-gradient(135deg,rgba(0,5,16,.82),rgba(4,22,80,.65));border:1px solid rgba(79,195,255,.28);border-radius:50px;padding:6px 6px 6px 22px;backdrop-filter:blur(20px);box-shadow:0 0 40px rgba(79,195,255,.1),inset 0 1px 0 rgba(160,216,255,.07);transition:border-color .3s,box-shadow .3s;}
+.search-bar:focus-within{border-color:rgba(79,195,255,.65);box-shadow:0 0 55px rgba(79,195,255,.18),0 0 0 3px rgba(79,195,255,.07);}
+.search-bar input{flex:1;background:none;border:none;outline:none;color:white;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:500;}
+.search-bar input::placeholder{color:rgba(160,216,255,.3);}
+.go-btn{background:linear-gradient(135deg,#4fc3ff,#1a6fff);border:none;border-radius:40px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;padding:13px 26px;cursor:pointer;transition:all .2s;}
+.go-btn:hover{background:linear-gradient(135deg,#82d4ff,#4fc3ff);box-shadow:0 0 24px rgba(79,195,255,.5);transform:scale(1.03);}
+#proxyStatus{margin-top:18px;display:flex;align-items:center;gap:8px;font-size:12px;letter-spacing:1px;opacity:.75;}
+.ps-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ps-dot.ok{background:#4fc3ff;box-shadow:0 0 8px rgba(79,195,255,.8);animation:pdot 2s infinite;}
+.ps-dot.fail{background:#f77;box-shadow:0 0 8px rgba(255,100,100,.6);}
+.ps-dot.checking{background:#fa6;box-shadow:0 0 8px rgba(255,180,80,.6);animation:pdot 1s infinite;}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.3}}
+#proxyText{color:rgba(160,216,255,.6);}
+#browserWrap{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;background:#000;}
+#browserWrap.show{display:flex;}
+#browserBar{height:54px;background:linear-gradient(90deg,rgba(0,5,16,.97),rgba(4,22,80,.95));border-bottom:1px solid rgba(79,195,255,.15);display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0;}
+.bb{background:none;border:none;color:rgba(160,216,255,.45);cursor:pointer;width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.bb:hover{color:var(--accent);background:rgba(79,195,255,.1);}
+.bb svg{width:16px;height:16px;fill:currentColor;}
+#urlBar{flex:1;background:rgba(79,195,255,.06);border:1px solid rgba(79,195,255,.14);border-radius:8px;padding:8px 14px;color:white;font-family:'Rajdhani',sans-serif;font-size:14px;outline:none;transition:all .2s;}
+#urlBar:focus{border-color:rgba(79,195,255,.5);}
+#siteFrame{flex:1;border:none;width:100%;background:white;}
+#gameWrap{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;background:#000;}
+#gameWrap.show{display:flex;}
+#gameBar{height:50px;background:linear-gradient(90deg,rgba(0,5,16,.97),rgba(4,22,80,.95));border-bottom:1px solid rgba(79,195,255,.15);display:flex;align-items:center;gap:10px;padding:0 14px;flex-shrink:0;}
+#gameTitleBar{flex:1;text-align:center;font-family:'Orbitron',sans-serif;font-size:12px;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;}
+#gameFrame{flex:1;border:none;width:100%;background:#0a0f28;}
+.panel{position:fixed;bottom:-100%;left:50%;transform:translateX(-50%);width:min(95%,920px);max-height:68vh;background:linear-gradient(180deg,rgba(0,8,28,.97),rgba(0,5,18,.99));backdrop-filter:blur(28px);border:1px solid rgba(79,195,255,.18);border-bottom:none;border-radius:24px 24px 0 0;transition:bottom .45s cubic-bezier(.16,1,.3,1);z-index:500;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 -8px 50px rgba(79,195,255,.07);}
+.panel.active{bottom:0;}
+.phdr{padding:20px 24px 16px;border-bottom:1px solid rgba(79,195,255,.07);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(90deg,rgba(79,195,255,.04),transparent);}
+.phdr h2{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px;text-transform:uppercase;}
+.px{background:none;border:none;color:rgba(160,216,255,.3);cursor:pointer;font-size:20px;transition:color .2s;line-height:1;}
+.px:hover{color:var(--accent);}
+.pbody{padding:20px 24px 30px;overflow-y:auto;flex:1;}
+.pbody::-webkit-scrollbar{width:3px;}
+.pbody::-webkit-scrollbar-thumb{background:rgba(79,195,255,.25);border-radius:2px;}
+.gg{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px;}
+.gc{background:linear-gradient(135deg,rgba(4,22,80,.45),rgba(0,8,28,.55));border:1px solid rgba(79,195,255,.1);border-radius:16px;padding:18px 10px;cursor:pointer;text-align:center;transition:all .25s;position:relative;overflow:hidden;}
+.gc::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(79,195,255,.1),rgba(26,111,255,.07));opacity:0;transition:opacity .25s;}
+.gc:hover{border-color:rgba(79,195,255,.42);transform:translateY(-4px);box-shadow:0 8px 30px rgba(79,195,255,.18);}
+.gc:hover::after{opacity:1;}
+.gi{font-size:28px;margin-bottom:8px;display:block;}
+.gn{font-weight:700;font-size:12px;letter-spacing:.5px;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.sg{margin-bottom:18px;}
+.sl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(79,195,255,.45);margin-bottom:8px;}
+.si,.ss{width:100%;background:linear-gradient(135deg,rgba(4,22,80,.38),rgba(0,8,28,.5));border:1px solid rgba(79,195,255,.14);border-radius:10px;padding:11px 16px;color:white;font-family:'Rajdhani',sans-serif;font-size:15px;outline:none;transition:all .2s;}
+.si:focus,.ss:focus{border-color:rgba(79,195,255,.48);}
+.ss{cursor:pointer;appearance:none;}.ss option{background:#000d2e;}
+.tr{display:flex;align-items:center;gap:14px;cursor:pointer;padding:10px 0;}
+.tt{width:44px;height:24px;border-radius:12px;position:relative;background:rgba(79,195,255,.09);border:1px solid rgba(79,195,255,.18);transition:all .3s;flex-shrink:0;}
+.tt.on{background:linear-gradient(90deg,#1a6fff,#4fc3ff);border-color:transparent;box-shadow:0 0 12px rgba(79,195,255,.4);}
+.th{position:absolute;top:3px;left:3px;width:16px;height:16px;background:white;border-radius:50%;transition:transform .3s;}
+.tt.on .th{transform:translateX(20px);}
+.tl{font-size:15px;font-weight:600;color:rgba(160,216,255,.65);}
+.sb{width:100%;margin-top:8px;background:linear-gradient(135deg,#4fc3ff,#1a6fff);border:none;border-radius:12px;color:#000;font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;padding:15px;cursor:pointer;transition:all .2s;}
+.sb:hover{opacity:.85;box-shadow:0 0 28px rgba(79,195,255,.4);transform:scale(1.01);}
+#devWrap{position:fixed;bottom:0;right:0;width:460px;display:none;flex-direction:column;z-index:1000;border:1px solid rgba(79,195,255,.18);border-radius:14px 0 0 0;overflow:hidden;box-shadow:-4px -4px 28px rgba(79,195,255,.07);}
+#devWrap.show{display:flex;}
+#devHeader{background:linear-gradient(90deg,rgba(0,5,16,.99),rgba(4,22,80,.98));padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(79,195,255,.1);flex-shrink:0;}
+#devHeader span{font-family:'Orbitron',sans-serif;font-size:10px;color:var(--accent2);letter-spacing:2px;}
+#devHeaderBtns{display:flex;gap:6px;align-items:center;}
+#closeDevBtn{background:none;border:none;color:rgba(160,216,255,.35);cursor:pointer;font-size:16px;line-height:1;}
+#closeDevBtn:hover{color:var(--accent);}
+#devLog{height:220px;background:linear-gradient(180deg,rgba(0,3,14,.99),rgba(0,8,28,.99));font-family:monospace;font-size:12px;overflow-y:auto;padding:12px;flex:1;}
+#devLog::-webkit-scrollbar{width:3px;}
+#devLog::-webkit-scrollbar-thumb{background:rgba(79,195,255,.25);}
+.dl{margin-bottom:3px;color:rgba(160,216,255,.75);}
+.dl.err{color:#f77;}.dl.warn{color:#fa6;}.dl.res{color:var(--accent);}.dl.ok{color:#5f9;}
+#devInput{background:rgba(0,5,18,.99);border:none;border-top:1px solid rgba(79,195,255,.13);color:var(--accent);font-family:monospace;font-size:12px;padding:9px 12px;outline:none;width:100%;}
+#devInput::placeholder{color:rgba(79,195,255,.22);}
+#chatPanel{position:fixed;right:20px;bottom:20px;width:270px;background:linear-gradient(135deg,rgba(0,5,16,.96),rgba(4,22,80,.9));border:1px solid rgba(79,195,255,.2);border-radius:20px;padding:22px 18px;display:none;z-index:600;backdrop-filter:blur(20px);text-align:center;}
+#chatPanel.show{display:block;}
+.cht{font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:3px;background:linear-gradient(90deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+.chb{color:rgba(160,216,255,.38);font-size:14px;line-height:1.7;}
+#backdrop{position:fixed;inset:0;z-index:499;display:none;}
+#backdrop.show{display:block;}
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(14px);background:linear-gradient(135deg,rgba(0,8,28,.93),rgba(4,22,80,.9));border:1px solid rgba(79,195,255,.32);color:var(--accent2);padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;backdrop-filter:blur(14px);}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+
+<nav class="nav">
+  <button class="nb" onclick="showHome()"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+  <button class="nb" onclick="togglePanel('gamesPanel')"><svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5S14.67 12 15.5 12s1.5.67 1.5 1.5S16.33 15 15.5 15zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 10 18.5 10s1.5.67 1.5 1.5S19.33 12 18.5 12z"/></svg></button>
+  <button class="nb" onclick="togglePanel('settingsPanel')"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
+  <button class="nb" onclick="toggleChat()"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></button>
+  <div class="ndiv"></div>
+  <button class="nb" id="devBtn" onclick="toggleDev()">DEV</button>
+</nav>
+
+<div id="home">
+  <div class="logo" id="logoText">BlueNebula</div>
+  <div class="sub">powered by celestial proxy</div>
+  <div class="search-bar">
+    <input id="searchInput" placeholder="Search or enter a URL…" />
+    <button class="go-btn" onclick="go()">LAUNCH</button>
+  </div>
+  <div id="proxyStatus">
+    <div class="ps-dot checking" id="psDot"></div>
+    <span id="proxyText">Initializing Celestial…</span>
+  </div>
+</div>
+
+<div id="browserWrap">
+  <div id="browserBar">
+    <button class="bb" onclick="closeBrowser()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+    <button class="bb" onclick="document.getElementById('siteFrame').contentWindow.location.reload()"><svg viewBox="0 0 24 24"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button>
+    <input id="urlBar" placeholder="Search or enter URL…" onkeydown="if(event.key==='Enter')navigateTo(this.value)" />
+    <button class="bb" onclick="navigateTo(document.getElementById('urlBar').value)"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    <button class="bb" onclick="openNewTab()"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></button>
+  </div>
+  <iframe id="siteFrame" src="about:blank" allow="fullscreen" allowfullscreen
+    sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-pointer-lock allow-top-navigation allow-modals"></iframe>
+</div>
+
+<div id="gameWrap">
+  <div id="gameBar">
+    <button class="bb" onclick="closeGame()"><svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button>
+    <div id="gameTitleBar">GAME BAR</div>
+    <button class="bb" onclick="document.getElementById('gameFrame').requestFullscreen()"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+  </div>
+  <iframe id="gameFrame" src="about:blank" allow="fullscreen; pointer-lock" allowfullscreen></iframe>
+</div>
+
+<div id="backdrop" onclick="closeAllPanels()"></div>
+
+<div class="panel" id="gamesPanel">
+  <div class="phdr"><h2>🎮 Game Bar</h2><button class="px" onclick="closePanel('gamesPanel')">✕</button></div>
+  <div class="pbody">
+    <div class="gg">
+      <div class="gc" onclick="loadGame('https://1v1.lol','1v1.LOL')"><span class="gi">🎯</span><div class="gn">1v1.LOL</div></div>
+      <div class="gc" onclick="loadGame('https://slope-game.github.io','Slope')"><span class="gi">🌀</span><div class="gn">Slope</div></div>
+      <div class="gc" onclick="loadGame('https://run3.io','Run 3')"><span class="gi">🏃</span><div class="gn">Run 3</div></div>
+      <div class="gc" onclick="loadGame('https://classic.minecraft.net','Minecraft')"><span class="gi">⛏️</span><div class="gn">Minecraft</div></div>
+      <div class="gc" onclick="loadGame('https://eaglercraft.com/mc/1.8.8-wasm/','EaglerCraft')"><span class="gi">🌍</span><div class="gn">EaglerCraft</div></div>
+      <div class="gc" onclick="loadGame('https://poki.com/en/g/krunker','Krunker')"><span class="gi">🔫</span><div class="gn">Krunker</div></div>
+      <div class="gc" onclick="loadGame('https://agar.io','Agar.io')"><span class="gi">🔵</span><div class="gn">Agar.io</div></div>
+      <div class="gc" onclick="loadGame('https://slither.io','Slither.io')"><span class="gi">🐍</span><div class="gn">Slither.io</div></div>
+      <div class="gc" onclick="loadGame('https://poki.com/en/g/paper-io-2','Paper.io 2')"><span class="gi">📄</span><div class="gn">Paper.io 2</div></div>
+      <div class="gc" onclick="loadGame('https://poki.com/en/g/subway-surfers','Subway Surfers')"><span class="gi">🚇</span><div class="gn">Subway Surfers</div></div>
+      <div class="gc" onclick="loadGame('https://poki.com/en/g/basketball-stars','Basketball Stars')"><span class="gi">🏀</span><div class="gn">Basketball Stars</div></div>
+      <div class="gc" onclick="loadGame('https://poki.com/en/g/among-us','Among Us')"><span class="gi">🔪</span><div class="gn">Among Us</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="settingsPanel">
+  <div class="phdr"><h2>⚙ Settings</h2><button class="px" onclick="closePanel('settingsPanel')">✕</button></div>
+  <div class="pbody">
+    <div class="sg"><div class="sl">Tab Title</div><input class="si" id="tabTitleInput" placeholder="BlueNebula" /></div>
+    <div class="sg"><div class="sl">Logo Name</div><input class="si" id="logoNameInput" placeholder="BlueNebula" /></div>
+    <div class="sg">
+      <div class="sl">Default Search Engine</div>
+      <select class="ss" id="engineSelect">
+        <option value="https://search.yahoo.com/search?p=">Yahoo</option>
+        <option value="https://duckduckgo.com/?q=">DuckDuckGo</option>
+        <option value="https://www.google.com/search?q=">Google</option>
+        <option value="https://www.bing.com/search?q=">Bing</option>
+      </select>
+    </div>
+    <div class="sg">
+      <label class="tr" onclick="toggleDevMode()">
+        <div class="tt" id="devTrack"><div class="th"></div></div>
+        <span class="tl">Enable Dev Mode</span>
+      </label>
+    </div>
+    <button class="sb" onclick="saveSettings()">SAVE SETTINGS</button>
+  </div>
+</div>
+
+<div id="chatPanel">
+  <div class="cht">NEBULA CHAT</div>
+  <div class="chb">🌌<br><br>NebulaChat coming soon.</div>
+</div>
+
+<div id="devWrap">
+  <div id="devHeader">
+    <span>DEV CONSOLE — CELESTIAL</span>
+    <div id="devHeaderBtns">
+      <button id="closeDevBtn" onclick="toggleDev()">✕</button>
+    </div>
+  </div>
+  <div id="devLog">
+    <div class="dl res">▶ BlueNebula + Celestial Proxy</div>
+    <div class="dl">▶ Type JS and press Enter ↓</div>
+  </div>
+  <input id="devInput" placeholder="> evaluate JS expression..." onkeydown="runDev(event)" />
+</div>
+
+<div id="toast"></div>
+
+<!-- Celestial client — loaded from /celestial-client.js on your Netlify deploy -->
+<script>
+// Celestial config — these get set correctly once you deploy to Netlify
+window.__CELESTIAL_BARE__   = '/.netlify/functions/bare';
+window.__CELESTIAL_PREFIX__ = '/celestial/';
+</script>
+<script src="/celestial-client.js" onerror="celestialOffline()"></script>
+
+<script>
+// ═══════════════════════════════════════════════
+// CANVAS
+// ═══════════════════════════════════════════════
+const canvas=document.getElementById('bg'),ctx=canvas.getContext('2d');
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+resize();window.addEventListener('resize',resize);
+function r(a,b){return Math.random()*(b-a)+a;}
+function bh(){return r(195,242);}
+const STARS=Array.from({length:300},()=>({x:r(0,innerWidth),y:r(0,innerHeight),rad:r(.3,1.9),dx:r(-.05,.05),dy:r(-.05,.05),op:r(.3,1),dir:1,spd:r(.003,.016),hue:bh()}));
+const NEBULAS=Array.from({length:7},()=>({x:r(0,innerWidth),y:r(0,innerHeight),r:r(110,300),ang:r(0,Math.PI*2),spd:r(.0005,.0016),hue:bh(),sat:r(70,100)}));
+const PLANETS=Array.from({length:5},()=>({cx:r(80,innerWidth-80),cy:r(80,innerHeight-80),orx:r(60,210),ory:r(22,85),ang:r(0,Math.PI*2),spd:r(.0008,.003)*(Math.random()<.5?1:-1),sz:r(5,19),hue:bh(),sat:r(70,100),lit:r(50,70),rings:Math.random()<.45,rhue:bh()}));
+function drawBG(){
+  const bg=ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  bg.addColorStop(0,'#000510');bg.addColorStop(.5,'#000b20');bg.addColorStop(1,'#000308');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,canvas.width,canvas.height);
+  NEBULAS.forEach(n=>{n.ang+=n.spd;const p=.8+.2*Math.sin(n.ang*1.8);const g=ctx.createRadialGradient(n.x,n.y,n.r*.04,n.x,n.y,n.r*p);g.addColorStop(0,`hsla(${n.hue},${n.sat}%,65%,.13)`);g.addColorStop(.45,`hsla(${n.hue+12},${n.sat}%,55%,.065)`);g.addColorStop(1,`hsla(${n.hue},${n.sat}%,50%,0)`);ctx.beginPath();ctx.arc(n.x,n.y,n.r*p,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();});
+  STARS.forEach(s=>{s.op+=s.spd*s.dir;if(s.op>=1)s.dir=-1;if(s.op<=.15)s.dir=1;s.x+=s.dx;s.y+=s.dy;if(s.x<0)s.x=canvas.width;if(s.x>canvas.width)s.x=0;if(s.y<0)s.y=canvas.height;if(s.y>canvas.height)s.y=0;ctx.beginPath();ctx.arc(s.x,s.y,s.rad,0,Math.PI*2);ctx.fillStyle=`hsla(${s.hue},75%,88%,${s.op})`;ctx.fill();});
+  PLANETS.forEach(p=>{p.ang+=p.spd;const px=p.cx+Math.cos(p.ang)*p.orx,py=p.cy+Math.sin(p.ang)*p.ory;ctx.save();ctx.beginPath();ctx.ellipse(p.cx,p.cy,p.orx,p.ory,0,0,Math.PI*2);ctx.strokeStyle=`hsla(${p.hue},70%,60%,.06)`;ctx.lineWidth=1;ctx.stroke();ctx.restore();if(p.rings){ctx.save();ctx.beginPath();ctx.ellipse(px,py,p.sz*2.5,p.sz*.52,p.ang+.5,0,Math.PI*2);const rg=ctx.createLinearGradient(px-p.sz*2.5,py,px+p.sz*2.5,py);rg.addColorStop(0,`hsla(${p.rhue},80%,70%,0)`);rg.addColorStop(.3,`hsla(${p.rhue},85%,72%,.52)`);rg.addColorStop(.7,`hsla(${p.rhue+18},80%,65%,.52)`);rg.addColorStop(1,`hsla(${p.rhue},80%,70%,0)`);ctx.strokeStyle=rg;ctx.lineWidth=3.5;ctx.stroke();ctx.restore();}const pg=ctx.createRadialGradient(px-p.sz*.35,py-p.sz*.35,p.sz*.04,px,py,p.sz);pg.addColorStop(0,`hsla(${p.hue+22},${p.sat}%,${p.lit+22}%,1)`);pg.addColorStop(.5,`hsla(${p.hue+5},${p.sat}%,${p.lit}%,1)`);pg.addColorStop(1,`hsla(${p.hue-8},${p.sat}%,${p.lit-22}%,.92)`);ctx.beginPath();ctx.arc(px,py,p.sz,0,Math.PI*2);ctx.fillStyle=pg;ctx.fill();const glow=ctx.createRadialGradient(px,py,p.sz,px,py,p.sz*2.6);glow.addColorStop(0,`hsla(${p.hue},85%,65%,.14)`);glow.addColorStop(1,`hsla(${p.hue},85%,65%,0)`);ctx.beginPath();ctx.arc(px,py,p.sz*2.6,0,Math.PI*2);ctx.fillStyle=glow;ctx.fill();});
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+// ═══════════════════════════════════════════════
+// CELESTIAL INIT
+// ═══════════════════════════════════════════════
+let celestialReady = false;
+
+function celestialOffline() {
+  // celestial-client.js failed to load (running outside Netlify deploy)
+  devLog('⚠ celestial-client.js not found — are you deployed to Netlify?', 'warn');
+  devLog('  Run locally: open index.html after deploying the full /celestial/ folder', 'warn');
+  setBadge('fail', 'Not deployed — upload to Netlify to activate proxy');
+}
+
+async function initCelestial() {
+  if (typeof Celestial === 'undefined') {
+    // Script hasn't loaded yet or failed
+    setTimeout(initCelestial, 300);
+    return;
+  }
+
+  setBadge('checking', 'Checking bare server…');
+  devLog('🔍 Checking Celestial bare server…');
+
+  const bareOk = await Celestial.checkBare();
+  if (!bareOk) {
+    setBadge('fail', 'Bare server unreachable — check Netlify deploy');
+    devLog('✗ Bare server not responding at /.netlify/functions/bare', 'err');
+    devLog('  Make sure you deployed the netlify/functions/bare.js file', 'warn');
+    return;
+  }
+
+  devLog('✓ Bare server OK', 'ok');
+  setBadge('checking', 'Registering service worker…');
+
+  try {
+    await Celestial.register();
+    celestialReady = true;
+    setBadge('ok', 'Celestial ready ✦');
+    devLog('✓ Service worker active — Celestial is live!', 'ok');
+  } catch (e) {
+    setBadge('fail', 'SW registration failed: ' + e.message);
+    devLog('✗ SW error: ' + e.message, 'err');
+  }
+}
+
+function setBadge(state, text) {
+  document.getElementById('psDot').className = 'ps-dot ' + state;
+  document.getElementById('proxyText').textContent = text;
+}
+
+// Start init after a short delay to let the script tag load
+setTimeout(initCelestial, 400);
+
+// ═══════════════════════════════════════════════
+// URL / NAV
+// ═══════════════════════════════════════════════
+let defaultEngine = 'https://search.yahoo.com/search?p=';
+let devModeOn = false;
+let activePanel = null;
+
+function buildURL(raw) {
+  raw=(raw||'').trim();if(!raw)return null;
+  if(/^https?:\/\//i.test(raw))return raw;
+  if(/^[\w-]+(\.\w+)+(\/.*)?$/.test(raw)&&!raw.includes(' '))return 'https://'+raw;
+  return defaultEngine+encodeURIComponent(raw);
+}
+
+function toProxy(url) {
+  if (celestialReady && typeof Celestial !== 'undefined') {
+    return Celestial.toProxyUrl(url);
+  }
+  return url; // direct fallback if not deployed yet
+}
+
+function go(){const u=buildURL(document.getElementById('searchInput').value);if(u)loadSite(u);}
+function navigateTo(v){const u=buildURL(v);if(u)loadSite(u);}
+function loadSite(url){
+  document.getElementById('urlBar').value=url;
+  document.getElementById('siteFrame').src=toProxy(url);
+  document.getElementById('home').style.display='none';
+  document.getElementById('browserWrap').classList.add('show');
+  closeAllPanels();
+}
+function closeBrowser(){document.getElementById('browserWrap').classList.remove('show');document.getElementById('home').style.display='flex';}
+function openNewTab(){const s=document.getElementById('siteFrame').src;if(s&&s!=='about:blank')window.open(s,'_blank');}
+document.getElementById('searchInput').addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+document.getElementById('urlBar').addEventListener('keydown',e=>{if(e.key==='Enter')navigateTo(e.target.value);});
+
+function loadGame(url,name){
+  document.getElementById('gameTitleBar').textContent=name.toUpperCase();
+  document.getElementById('gameFrame').src=toProxy(url);
+  document.getElementById('gameWrap').classList.add('show');
+  document.getElementById('home').style.display='none';
+  document.getElementById('browserWrap').classList.remove('show');
+  closeAllPanels();
+}
+function closeGame(){document.getElementById('gameWrap').classList.remove('show');document.getElementById('gameFrame').src='about:blank';document.getElementById('home').style.display='flex';}
+
+function togglePanel(id){const open=document.getElementById(id).classList.contains('active');closeAllPanels();if(!open){document.getElementById(id).classList.add('active');document.getElementById('backdrop').classList.add('show');activePanel=id;}}
+function closePanel(id){document.getElementById(id).classList.remove('active');document.getElementById('backdrop').classList.remove('show');if(activePanel===id)activePanel=null;}
+function closeAllPanels(){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById('backdrop').classList.remove('show');activePanel=null;}
+function showHome(){document.getElementById('home').style.display='flex';document.getElementById('browserWrap').classList.remove('show');document.getElementById('gameWrap').classList.remove('show');document.getElementById('chatPanel').classList.remove('show');closeAllPanels();}
+function toggleChat(){document.getElementById('chatPanel').classList.toggle('show');}
+function toggleDevMode(){devModeOn=!devModeOn;document.getElementById('devTrack').classList.toggle('on',devModeOn);document.getElementById('devBtn').classList.toggle('show',devModeOn);if(!devModeOn)document.getElementById('devWrap').classList.remove('show');}
+function saveSettings(){const t=document.getElementById('tabTitleInput').value.trim();const l=document.getElementById('logoNameInput').value.trim();const e=document.getElementById('engineSelect').value;if(t)document.title=t;if(l)document.getElementById('logoText').textContent=l;if(e)defaultEngine=e;closePanel('settingsPanel');toast('Settings saved ✓');}
+function toggleDev(){document.getElementById('devWrap').classList.toggle('show');}
+function devLog(msg,type=''){const log=document.getElementById('devLog');const d=document.createElement('div');d.className='dl '+type;d.textContent=msg;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+const _l=console.log,_w=console.warn,_e=console.error;
+console.log=(...a)=>{_l(...a);devLog('LOG: '+a.join(' '));};
+console.warn=(...a)=>{_w(...a);devLog('WARN: '+a.join(' '),'warn');};
+console.error=(...a)=>{_e(...a);devLog('ERR: '+a.join(' '),'err');};
+window.onerror=(m,s,l)=>devLog('ERROR: '+m+' ('+s+':'+l+')','err');
+function runDev(e){if(e.key!=='Enter')return;const inp=document.getElementById('devInput');const code=inp.value.trim();if(!code)return;devLog('> '+code);inp.value='';try{const res=eval(code);if(res!==undefined)devLog('← '+JSON.stringify(res),'res');}catch(err){devLog('← '+err.message,'err');}}
+let _tt;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
