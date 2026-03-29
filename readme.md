@@ -13,6 +13,8 @@ Celeste is a highly used web engine used for privacy and avoiding more restricti
 Celeste offers a lot of support for various different things. it supports complex js css and html while being very sppedy. it can load everyones favourite pages while still looking very good. it has support for Capachas and not a robot tests to prove your not so stay tuned...
 
 
+## Things To Think About
+
 > [!NOTE]
 > When Version 5.5. Comes Out There Will Be A Doc On How To Use It.
 > Are Official URL For The Time Being Is Celeste.Netlify.App
@@ -24,4 +26,8 @@ Celeste offers a lot of support for various different things. it supports comple
 
 > [!IMPORTANT]
 > You must press apply after chsnging settings to apply changes.
+
+
+> [!WARNING]
+> Stuff Is 100% Gonna Break If You See Something Happen Refresh The Page
 
