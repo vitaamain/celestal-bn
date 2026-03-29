@@ -1,4 +1,4 @@
-<p align="center"><img src="[https://ik.imagekit.io/l7uslhlci/IMG_4027.png]" height="250"></p>
+<p align="center"><img src="[https://ik.imagekit.io/l7uslhlci/IMG_4027.png]"height="250"></p>
 
 <h1 align="center">Celeste</h1>
 
