@@ -12,3 +12,6 @@ Celeste is a highly used web engine used for privacy and avoiding more restricti
 
 Celeste offers a lot of support for various different things. it supports complex js css and html while being very sppedy. it can load everyones favourite pages while still looking very good. it has support for Capachas and not a robot tests to prove your not so stay tuned...
 
+
+> [!NOTE]
+> When Version 5.5. Comes Out There Will Be A Doc On How To Use It
