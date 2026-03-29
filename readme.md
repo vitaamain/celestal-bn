@@ -1,9 +1,9 @@
 ![Celeste](https://ik.imagekit.io/l7uslhlci/IMG_4027.png)
 
-<div style="border: 2px solid red; padding: 12px; border-radius: 8px; background-color: rgba(255, 0, 0, 0.05);">
+<div style="border: 8px solid red; padding: 12px; border-radius: 8px; background-color: rgba(255, 0, 0, 0.05);">
 <strong>⚠️ CAUTION</strong><br>
 Celeste is not finished. This is only its second state, and it will keep improving over time. Expect bugs, unfinished features, random changes, and occasional chaos while things are being built out.
-</strong>
+</div>
 
 ---
 
