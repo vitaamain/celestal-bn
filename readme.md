@@ -15,7 +15,7 @@ Welcome to the official Celestal repo, where you can unleash the full ability of
 - Built In Debugging Tools / Diagnostics
 - HTML, JS, And CSS All Natively Handled Better Than Others
 - Combines The Easy Feel Of UltraViolet With The ScramJet Efficincy To Make Something Better
-- 
+- URL-Encoding
 
 
 ## Things To Think About
