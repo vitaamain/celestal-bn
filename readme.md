@@ -17,19 +17,19 @@ It’s not trying to be some massive, bloated platform. The goal is to keep thin
 
 ## ✨ What it does
 
-* ⚡ **Fast browsing**
+* ⚡ **Fast browsing**  
   Pages load quickly without feeling sluggish or overloaded.
 
-* 🧼 **Simple UI**
+* 🧼 **Simple UI**  
   No clutter, no confusing menus, no unnecessary stuff in your way.
 
-* 🎨 **Clean design**
+* 🎨 **Clean design**  
   Smooth gradients, modern layout, and an interface that doesn’t look outdated.
 
-* 🔒 **Privacy-focused**
+* 🔒 **Privacy-focused**  
   Built with the idea that your activity shouldn’t be exposed or tracked unnecessarily.
 
-* 🧠 **Low effort to use**
+* 🧠 **Low effort to use**  
   No complicated setup. Just open and go.
 
 ---
