@@ -1,0 +1,31 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+# /bare -> the Netlify function, nice short URL
+[[redirects]]
+  from = "/bare"
+  to   = "/.netlify/functions/bare"
+  status = 200
+
+# All /celestial/* paths stay on index.html (SW handles them)
+[[redirects]]
+  from = "/celestial/*"
+  to   = "/index.html"
+  status = 200
+
+# SW must be served from root with correct scope header
+[[headers]]
+  for = "/celestial-sw.js"
+  [headers.values]
+    Service-Worker-Allowed = "/"
+    Cache-Control = "no-cache, no-store"
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "/.netlify/functions/bare"
+  [headers.values]
+    Access-Control-Allow-Origin  = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD"
+    Access-Control-Allow-Headers = "*"
+    Access-Control-Expose-Headers = "*"

@@ -1,168 +1,129 @@
 /**
- * Celestial Client Library
- * Registers the service worker and provides the client-side API.
- * Also injected into proxied pages to override location/window APIs.
+ * Celestial Client v2
+ * Registers the SW with the correct scope, exposes encode/navigate API.
+ * Also used as the injected page shim (when loaded inside a proxied page).
  */
-
-(function (global) {
+(function(G) {
   'use strict';
 
-  const PREFIX  = global.__CELESTIAL_PREFIX__  || '/celestial/';
-  const BARE    = global.__CELESTIAL_BARE__    || '/.netlify/functions/bare';
-  const SW_URL  = PREFIX + '../celestial-sw.js'; // resolves to /celestial-sw.js
+  const PREFIX  = G.__CELESTIAL_PREFIX__ || '/celestial/';
+  const BARE    = G.__CELESTIAL_BARE__   || '/bare';
   const XOR_KEY = 0x42;
 
-  // ── Encoding ──────────────────────────────────────────────────────────────
   function encode(str) {
     const bytes = new TextEncoder().encode(str);
     const xored = bytes.map(b => b ^ XOR_KEY);
     return btoa(String.fromCharCode(...xored))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
   }
-
   function decode(str) {
-    const padded = str.replace(/-/g, '+').replace(/_/g, '/');
-    const binary = atob(padded);
-    const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0) ^ XOR_KEY);
-    return new TextDecoder().decode(bytes);
-  }
-
-  function toProxyUrl(url) {
     try {
-      const abs = new URL(url, global.__CELESTIAL_BASE__ || location.href).href;
+      const p = str.replace(/-/g,'+').replace(/_/g,'/');
+      const b = atob(p);
+      const bytes = Uint8Array.from(b, c => c.charCodeAt(0) ^ XOR_KEY);
+      return new TextDecoder().decode(bytes);
+    } catch { return null; }
+  }
+  function toProxyUrl(url, base) {
+    try {
+      const abs = new URL(url, base || G.location.href).href;
+      if (/^(data:|blob:|javascript:|mailto:|tel:)/.test(abs)) return url;
       return PREFIX + encode(abs);
     } catch { return url; }
   }
 
-  function fromProxyUrl(proxyPath) {
-    if (!proxyPath.startsWith(PREFIX)) return null;
-    try { return decode(proxyPath.slice(PREFIX.length)); } catch { return null; }
-  }
-
-  // ── Exposed API ───────────────────────────────────────────────────────────
   const Celestial = {
-    encode,
-    decode,
-    toProxyUrl,
-    fromProxyUrl,
-    PREFIX,
-    BARE,
+    encode, decode, toProxyUrl, PREFIX, BARE,
+    navigate(url) { G.location.href = toProxyUrl(url); },
 
-    // Navigate to a URL through the proxy
-    navigate(url) {
-      location.href = toProxyUrl(url);
-    },
-
-    // Register the service worker and resolve when ready
     async register() {
-      if (!('serviceWorker' in navigator)) {
-        throw new Error('Service workers not supported in this browser.');
-      }
-
-      // Pass config to the SW via URL params
+      if (!('serviceWorker' in navigator)) throw new Error('SW not supported');
       const swSrc = `/celestial-sw.js?bare=${encodeURIComponent(BARE)}&prefix=${encodeURIComponent(PREFIX)}`;
-
-      const reg = await navigator.serviceWorker.register(swSrc, { scope: PREFIX });
-
-      // Wait for the SW to be active
-      await new Promise((resolve, reject) => {
-        if (reg.active) { resolve(); return; }
-        const target = reg.installing || reg.waiting;
-        if (!target) { resolve(); return; }
-        target.addEventListener('statechange', function () {
-          if (this.state === 'activated') resolve();
-          if (this.state === 'redundant')  reject(new Error('SW install failed'));
+      const reg = await navigator.serviceWorker.register(swSrc, {
+        scope: PREFIX,
+        updateViaCache: 'none',
+      });
+      await new Promise((res, rej) => {
+        if (reg.active) { res(); return; }
+        const sw = reg.installing || reg.waiting;
+        if (!sw) { res(); return; }
+        sw.addEventListener('statechange', function() {
+          if (this.state === 'activated') res();
+          if (this.state === 'redundant')  rej(new Error('SW install failed'));
         });
       });
-
-      console.log('[Celestial] Service worker registered & active');
       return reg;
     },
 
-    // Check if the bare server is reachable
     async checkBare() {
       try {
-        const res = await fetch(BARE, { method: 'GET' });
-        if (!res.ok) return false;
-        const json = await res.json();
-        return Array.isArray(json.versions);
+        const r = await fetch(BARE, { method: 'GET' });
+        if (!r.ok) return false;
+        const j = await r.json();
+        return Array.isArray(j.versions);
       } catch { return false; }
     },
   };
 
-  // ── Location override (injected into proxied pages) ───────────────────────
-  // When Celestial injects this script into a proxied page, __CELESTIAL_BASE__
-  // is set to the real origin URL. We override location.href assignment so
-  // links/redirects inside the page stay inside the proxy.
-  if (global.__CELESTIAL_BASE__) {
-    const realBase = global.__CELESTIAL_BASE__;
+  // ── Page shim — only runs when injected inside a proxied page ──────────────
+  // The SW injects: <script src="/celestial/__celestial-shim__" data-base="..." data-prefix="...">
+  // That script tag loads THIS file. We detect the data-base attribute to know we're in a page.
+  const shimTag = document.currentScript;
+  const realBase = shimTag && shimTag.getAttribute('data-base');
 
-    // Override location.href setter
+  if (realBase) {
+    // Override location
     try {
-      const locDesc = Object.getOwnPropertyDescriptor(global, 'location');
-      if (locDesc && locDesc.configurable) {
-        const realLocation = global.location;
-        const fakeLocation = new Proxy(realLocation, {
-          get(target, prop) {
-            if (prop === 'href') return realBase;
-            if (prop === 'origin') return new URL(realBase).origin;
-            if (prop === 'hostname') return new URL(realBase).hostname;
-            if (prop === 'host') return new URL(realBase).host;
-            if (prop === 'pathname') return new URL(realBase).pathname;
-            if (prop === 'assign') return (url) => Celestial.navigate(url);
-            if (prop === 'replace') return (url) => Celestial.navigate(url);
-            const val = target[prop];
-            return typeof val === 'function' ? val.bind(target) : val;
-          },
-          set(target, prop, val) {
-            if (prop === 'href') { Celestial.navigate(val); return true; }
-            target[prop] = val; return true;
-          },
-        });
-        Object.defineProperty(global, 'location', { get: () => fakeLocation, configurable: true });
-      }
-    } catch (e) {}
+      const realLoc = G.location;
+      const baseObj = new URL(realBase);
+      const fakeLoc = new Proxy(realLoc, {
+        get(t, p) {
+          if (p === 'href')     return realBase;
+          if (p === 'origin')   return baseObj.origin;
+          if (p === 'host')     return baseObj.host;
+          if (p === 'hostname') return baseObj.hostname;
+          if (p === 'pathname') return baseObj.pathname;
+          if (p === 'search')   return baseObj.search;
+          if (p === 'hash')     return baseObj.hash;
+          if (p === 'assign')   return (u) => Celestial.navigate(new URL(u, realBase).href);
+          if (p === 'replace')  return (u) => Celestial.navigate(new URL(u, realBase).href);
+          if (p === 'reload')   return () => G.location.reload();
+          const v = t[p]; return typeof v === 'function' ? v.bind(t) : v;
+        },
+        set(t, p, v) {
+          if (p === 'href') { Celestial.navigate(new URL(v, realBase).href); return true; }
+          t[p] = v; return true;
+        },
+      });
+      Object.defineProperty(G, 'location', { get: () => fakeLoc, configurable: true });
+    } catch {}
 
     // Override document.domain
-    try {
-      Object.defineProperty(document, 'domain', {
-        get: () => new URL(realBase).hostname,
-        configurable: true,
-      });
-    } catch (e) {}
+    try { Object.defineProperty(document, 'domain', { get: () => new URL(realBase).hostname, configurable: true }); } catch {}
 
-    // Override window.open to go through proxy
-    const _open = global.open.bind(global);
-    global.open = function (url, ...args) {
-      if (url) return _open(toProxyUrl(url), ...args);
-      return _open(...args);
-    };
+    // Override window.open
+    const _open = G.open.bind(G);
+    G.open = (url, ...a) => url ? _open(toProxyUrl(url, realBase), ...a) : _open(...a);
 
-    // Override fetch to go through bare server
-    const _fetch = global.fetch.bind(global);
-    global.fetch = function (input, init) {
+    // Override fetch
+    const _fetch = G.fetch.bind(G);
+    G.fetch = (input, init) => {
       try {
         const url = typeof input === 'string' ? input : input.url;
         const abs = new URL(url, realBase).href;
-        // If it's already a proxy URL or a relative-to-SW path, leave it
-        if (abs.startsWith(PREFIX)) return _fetch(input, init);
-        return _fetch(toProxyUrl(abs), init);
+        return _fetch(abs.startsWith(PREFIX) ? input : toProxyUrl(abs), init);
       } catch { return _fetch(input, init); }
     };
 
-    // Override XMLHttpRequest
-    const _XHR = global.XMLHttpRequest;
-    global.XMLHttpRequest = class extends _XHR {
-      open(method, url, ...args) {
-        try {
-          const abs = new URL(url, realBase).href;
-          if (!abs.startsWith(PREFIX)) url = toProxyUrl(abs);
-        } catch {}
-        super.open(method, url, ...args);
+    // Override XHR
+    const _XHR = G.XMLHttpRequest;
+    G.XMLHttpRequest = class extends _XHR {
+      open(m, url, ...a) {
+        try { url = toProxyUrl(new URL(url, realBase).href); } catch {}
+        super.open(m, url, ...a);
       }
     };
   }
 
-  global.Celestial = Celestial;
-
+  G.Celestial = Celestial;
 })(typeof globalThis !== 'undefined' ? globalThis : self);
