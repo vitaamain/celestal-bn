@@ -1,73 +1,66 @@
 ![Celeste](https://ik.imagekit.io/l7uslhlci/IMG_4027.png)
 
-<div style="border: 8px solid red; padding: 12px; border-radius: 8px; background-color: rgba(255, 0, 0, 0.05);">
-<strong>⚠️ CAUTION</strong><br>
-Celeste is not finished. This is only its second state, and it will keep improving over time. Expect bugs, unfinished features, random changes, and occasional chaos while things are being built out.
-</div>
+<p align="center"><img src="https://raw.githubusercontent.com/titaniumnetwork-dev/Ultraviolet-Static/main/public/uv.png" height="250"></p>
 
----
+<h1 align="center">Ultraviolet</h1>
 
-## 🌌 Celeste
+<a href="https://www.npmjs.com/package/@titaniumnetwork-dev/ultraviolet"><img src="https://img.shields.io/npm/v/@titaniumnetwork-dev/ultraviolet.svg?maxAge=3600" alt="npm version" /></a>
 
-Celeste is a modern, lightweight proxy built to feel simple, fast, and actually usable without a bunch of setup headaches. You open it, it works, and it looks good doing it. The whole vibe is clean and minimal with a smooth purple-blue gradient that gives it that slightly futuristic feel without being overdesigned.
+> [!CAUTION]
+> Please note that this project isn't really maintained anymore before making issues! It has been superseded by [Scramjet](https://github.com/MercuryWorkshop/scramjet). An example application setup can be found [here](https://github.com/MercuryWorkshop/Scramjet-App).
 
-It’s not trying to be some massive, bloated platform. The goal is to keep things straightforward while still making it feel polished and solid.
+Ultraviolet is a highly advanced web proxy used for evading internet censorship or accessing websites in a controlled sandbox. It is designed with security and performance in mind. Ultraviolet intercepts HTTP requests with a service worker, while adhering to the [TompHTTP specifications](https://github.com/tomphttp) and is a leader in innovative web proxy technologies.
 
----
+## Features
 
-## ✨ What it does
+Ultraviolet offers several features that set it apart from its predecessors, including CAPTCHA and hCAPTCHA support, URL encoding settings for added security, client-side configuration via service-workers, high speed compared to other web proxies, blacklist settings and more for easy hosting, leak prevention, regular updates, and improved resource usage and speed for better setups with a dedicated server instance.
 
-* ⚡ **Fast browsing**  
-  Pages load quickly without feeling sluggish or overloaded.
+## Supported Sites
 
-* 🧼 **Simple UI**  
-  No clutter, no confusing menus, no unnecessary stuff in your way.
+Some of the popular websites that Ultraviolet supports include:
 
-* 🎨 **Clean design**  
-  Smooth gradients, modern layout, and an interface that doesn’t look outdated.
+- [Google](https://google.com)
+- [Youtube](https://www.youtube.com)
+- [Spotify](https://spotify.com)
+- [Discord](https://discord.com)
+- [Reddit](https://reddit.com)
+- [GeForce NOW](https://play.geforcenow.com/)
+- [now.gg](https://now.gg)
 
-* 🔒 **Privacy-focused**  
-  Built with the idea that your activity shouldn’t be exposed or tracked unnecessarily.
+## Used by
 
-* 🧠 **Low effort to use**  
-  No complicated setup. Just open and go.
+- [Holy Unblocker LTS](https://github.com/QuiteAFancyEmerald/Holy-Unblocker)
+- [Alu](https://github.com/titaniumnetwork-dev/Alu)
+- [Incognito](https://github.com/titaniumnetwork-dev/Incognito)
+- [Nebula](https://github.com/NebulaServices/Nebula)
+- [AnuraOS](https://github.com/MercuryWorkshop/anuraOS)
+- [Terbium](https://github.com/TerbiumOS/webOS)
+- [Metallic](https://github.com/Metallic-Web/Metallic)
 
----
+## Upgrading
 
-## 🚀 Where it’s at
+A guide for updating from any version to v3 can be found [here](https://github.com/titaniumnetwork-dev/Ultraviolet/wiki/Upgrading).
 
-Right now, Celeste is only available on **Bluenebula**. That’s its current home while it’s still being developed and tested.
+## Older Ultraviolet versions
 
-As things improve and stabilize, it might expand to other platforms, but for now everything happens there.
+Starting from v3, Ultraviolet uses [bare-mux](https://github.com/MercuryWorkshop/bare-mux), a library that allows you to switch out your Bare client.
 
----
+If you operate using an older Ultraviolet, we encourage you to update.
 
-## 🛠️ Development status
+If you're too lazy to do either of the above, you can install an outdated and unsupported version of Ultraviolet.
 
-Celeste is still very much in progress. This is early-stage development, not a finished product.
+```sh
+npm install @titaniumnetwork-dev/ultraviolet@1
+```
 
-That means:
+## Changelog
 
-* Some features might not work perfectly
-* Things can change without warning
-* Bugs will show up and get fixed over time
-* New features will be added gradually
+Changes are documented in the [changelog](./CHANGELOG.md).
 
-Basically, it’s in its building phase. Every update is part of making it better.
+## Deployment
 
----
+This repository can be built, but it can't be deployed to any services. See [Ultraviolet-App](https://github.com/titaniumnetwork-dev/Ultraviolet-App) for a complete and customizable Ultraviolet setup that you can deploy.
 
-## 🔮 What to expect
+## Documentation
 
-Going forward, Celeste will keep evolving. The focus is on:
-
-* Improving speed and reliability
-* Making the UI even smoother
-* Adding useful features without making it complicated
-* Keeping everything clean and easy to use
-
-No overcomplication, no unnecessary bloat. Just steady improvements.
-
----
-
-Celeste is still growing, but the goal is simple: make something that feels good to use every single time.
+Documentation can be found in the [wiki](https://github.com/titaniumnetwork-dev/Ultraviolet/wiki).
