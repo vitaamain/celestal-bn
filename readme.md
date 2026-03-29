@@ -4,13 +4,18 @@
 
 
 > [!CAUTION]
-> This Project is not finished yet and will experience some bugs. it works great and its only on its second stage. it sill continue to evelove.
+> This Project is not finished yet and will experience some bugs. it works great and its only on its second stage. it sill continues to evelove.
 
-Celestal is a highly used web engine used for privacy and avoiding more restrictions. it lets you browse securely while also being able to visit your fsvourite sites. it has a lot of cool features listed below and endless options. in version 5.5 people can make their own site with it
+Welcome to the official Celestal repo, where you can unleash the full ability of the internet while being locked down on a device. Celestal provides the future-proofing and reliability of ScramJet with the feel of ultraviolet to create the best proxy engine. It is a sucsessor to scramjet due to all the features it provides that scramjet does not. Celestal can load just about anything in the browser witn no restrictions including OAuth and Capachas because of the build in Chromium Identifier which allows these requests to fully go through. Do Not Expect Capachas To Work With Large Internet Traffic. Celestal Also Includes URL-Encoding. Celestal Was Built From Scratch But Insprired By ScramJet and UltraViolet. Celestal is currently in early development and will eventually be dominating.
 
 ## Features
 
-Celestal offers a lot of support for various different things. it supports complex js css and html while being very sppedy. it can load everyones favourite pages while still looking very good. it has support for Capachas and not a robot tests to prove your not so stay tuned...
+- Support For Capachas & Microsoft/Google OAuth
+- Very Quick Responses To The Server
+- Built In Debugging Tools / Diagnostics
+- HTML, JS, And CSS All Natively Handled Better Than Others
+- Combines The Easy Feel Of UltraViolet With The ScramJet Efficincy To Make Something Better
+- 
 
 
 ## Things To Think About
