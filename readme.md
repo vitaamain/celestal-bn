@@ -20,3 +20,8 @@ Celeste offers a lot of support for various different things. it supports comple
 
 >[!TIP]
 >You Can Enable Dev Mode In Settings To Help Debugging
+
+
+> [!IMPORTANT]
+> You must press apply after chsnging settings to apply changes.
+
