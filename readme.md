@@ -19,4 +19,4 @@ Celeste offers a lot of support for various different things. it supports comple
 
 
 >[!TIP]
->You Can Enable Dev Mode To Help Debugging
+>You Can Enable Dev Mode In Settings To Help Debugging
