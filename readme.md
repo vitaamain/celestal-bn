@@ -31,3 +31,7 @@ Celestal offers a lot of support for various different things. it supports compl
 > [!WARNING]
 > Stuff Is 100% Gonna Break If You See Something Happen Refresh The Page
 
+
+> [!FUNFACT]
+> Celestal will soon be one of the best performing engines in thr world
+
